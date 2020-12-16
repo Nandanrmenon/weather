@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_weather/get_weather.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,18 +32,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  Color bgcolor = Color(0xff3cb9fc);
+
   String cityName;
   WeatherModel weather = WeatherModel();
   int temperature;
   String weatherIcon;
   String weatherMessage;
+  DateTime now = DateTime.now();
 
   bool isFetched = false;
+
+
+  String formattedTime = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff3cb9fc),
+      backgroundColor: bgcolor,
       appBar: AppBar(
         title: (isFetched ? Text("$cityName") : Text('Get Location')),
         elevation: 0,
@@ -54,6 +62,11 @@ class _MyHomePageState extends State<MyHomePage> {
               var weatherData = await weather.getCityWeather(cityName);
               print(weatherData);
               setState(() {
+                formattedTime = DateFormat.H().format(now);
+                print(formattedTime);
+                if(int.parse(formattedTime) > 16){
+                  bgcolor = Color(0xff3e4157);
+                }
                 if (weatherData == null) {
                   temperature = 0;
                   weatherIcon = 'Error';
