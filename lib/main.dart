@@ -32,7 +32,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   Color bgcolor = Color(0xff3cb9fc);
 
   String cityName;
@@ -43,7 +42,6 @@ class _MyHomePageState extends State<MyHomePage> {
   DateTime now = DateTime.now();
 
   bool isFetched = false;
-
 
   String formattedTime = "";
 
@@ -64,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 formattedTime = DateFormat.H().format(now);
                 print(formattedTime);
-                if(int.parse(formattedTime) > 16){
+                if (int.parse(formattedTime) > 16) {
                   bgcolor = Color(0xff3e4157);
                 }
                 if (weatherData == null) {
@@ -99,6 +97,35 @@ class _MyHomePageState extends State<MyHomePage> {
                         style: TextStyle(
                           color: Colors.black,
                         ),
+                        onEditingComplete: () async {
+                          isFetched = true;
+                          var weatherData =
+                              await weather.getCityWeather(cityName);
+                          print(weatherData);
+                          setState(() {
+                            formattedTime = DateFormat.H().format(now);
+                            print(formattedTime);
+                            if (int.parse(formattedTime) > 16) {
+                              bgcolor = Color(0xff3e4157);
+                            }
+                            if (weatherData == null) {
+                              temperature = 0;
+                              weatherIcon = 'Error';
+                              weatherMessage = 'Unable to get weather data';
+                              cityName = '';
+                              return;
+                            }
+                            double temp =
+                                weatherData['main']['temp'].toDouble();
+                            print(temp);
+                            temperature = temp.toInt();
+                            weatherMessage =
+                                weatherData['weather'][0]['description'];
+
+                            cityName = weatherData['name'];
+                          });
+                          // Navigator.pop(context, cityName);
+                        },
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Color.fromARGB(255, 25, 200, 238),
@@ -176,7 +203,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text('$temperature°', style: TextStyle(fontSize: 38.0),),
+                          child: Text(
+                            '$temperature°',
+                            style: TextStyle(fontSize: 38.0),
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
